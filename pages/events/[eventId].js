@@ -4,15 +4,21 @@ import EventLogistics from "../../components/events/event-logistics";
 import EventContent from "../../components/events/event-content";
 import { useRouter } from "next/router";
 import { getEventById } from "../../data/dummy-data";
+import ErrorAlert from "../../components/ui/error-alert";
+import { getEventItem } from "../../api/db";
 
-export const EventDetailPage = () => {
-  const router = useRouter();
+export const EventDetailPage = ({ event }) => {
+  //const router = useRouter();
 
-  const eventId = router.query.eventId;
-  const event = getEventById(eventId);
+  // const eventId = router.query.eventId;
+  // const event = getEventById(eventId);
 
   if (!event) {
-    return <p>No event found!</p>;
+    return (
+      <ErrorAlert>
+        <p>No event found!</p>
+      </ErrorAlert>
+    );
   }
 
   return (
@@ -32,3 +38,11 @@ export const EventDetailPage = () => {
 };
 
 export default EventDetailPage;
+
+export async function getServerSideProps(context) {
+  const { params } = context;
+  const event = await getEventItem(params.eventId);
+  return {
+    props: { event },
+  };
+}
